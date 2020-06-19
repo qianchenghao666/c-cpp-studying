@@ -1,9 +1,41 @@
-#include <stdio.h>
+/*    快速排序模板函数       */
+
+
+/*    使用方法:
+ *    1. quick_sort(  迭代器begin或数组开头  ,  元素数量n    ,    比较函数);
+ *    2. quick_sort(  迭代器begin或数组开头  ,  迭代器end或指向数组末尾的下一个元素的指针  ,  比较函数);
+ *
+ *    适用于:
+ *    int x[100] , int x[a]  , int x[a][100]  ,  类数组
+ *    vector deque list
+ *    
+ *    不适用于:
+ *    int x[a][b]
+ *
+ *    其中a,b为变量
+ *  */
+
+/*
+ *    比较函数:
+ *    int compare(const type &a,const type &b)
+ *    {
+ *      ...
+ *    }
+ *    返回值<0:a在b左边
+ *    返回值>0:a在b右边
+ *    返回值=0:a与b位置关系不确定
+ * */
+
+/*    注意事项:
+ *    swap函数与std::swap重名，请不要使用using namespace std; 
+ *    或者将修改源码将swap换个名字
+ * */
+
+
 #include <stdlib.h>
 template<typename T>
 char swap(T &a,T &b)
 {
-    //printf("swap %d %d\n",a,b);
     char *temp1=(char *)&a,*temp2=(char *)&b;
     for(long unsigned i=0;i<sizeof(T);i++)
     {
@@ -82,7 +114,6 @@ char quick_sort(const T begin,const int n,int (*comp)(const T2& a,const T2& b))
         }
         while(i<=j);
         free(jizhun);
-        //printf("j_c=%d i_c=%d i-begin=%ld j-begin=%ld\n",j_c,i_c,i-begin,j-begin);
         quick_sort(begin,j,j_c,comp);
         quick_sort(i,end,i_c,comp);
     }
