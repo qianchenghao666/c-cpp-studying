@@ -2,8 +2,8 @@
 
 
 /*    使用方法:
- *    1. quick_sort(  迭代器begin或数组开头  ,  元素数量n    ,    比较函数);
- *    2. quick_sort(  迭代器begin或数组开头  ,  迭代器end或指向数组末尾的下一个元素的指针  ,  比较函数);
+ *    1. qsort(  迭代器begin或数组开头  ,  元素数量n    ,    比较函数);
+ *    2. qsort(  迭代器begin或数组开头  ,  迭代器end或指向数组末尾的下一个元素的指针  ,  比较函数);
  *
  *    适用于:
  *    int x[100] , int x[a]  , int x[a][100]  ,  类数组
@@ -48,13 +48,13 @@ char swap(T &a,T &b)
     return 1;
 }
 template<typename T,typename T2>
-char quick_sort(const T begin,const int n,int (*comp)(const T2& a,const T2& b));
+char qsort(const T begin,const int n,int (*comp)(const T2& a,const T2& b));
 template<typename T,typename T2>
-char quick_sort(const T begin,const T fake_end,int (*comp)(const T2& a,const T2& b));
+char qsort(const T begin,const T fake_end,int (*comp)(const T2& a,const T2& b));
 template<typename T,typename T2>
-char quick_sort(const T begin,const T end,int n,int (*comp)(const T2& a,const T2& b));
+char qsort(const T begin,const T end,int n,int (*comp)(const T2& a,const T2& b));
 template<typename T,typename T2>
-char quick_sort(const T begin,const int n,int (*comp)(const T2& a,const T2& b))
+char qsort(const T begin,const int n,int (*comp)(const T2& a,const T2& b))
 {
     if(n>2)
     {
@@ -114,8 +114,8 @@ char quick_sort(const T begin,const int n,int (*comp)(const T2& a,const T2& b))
         }
         while(i<=j);
         free(jizhun);
-        quick_sort(begin,j,j_c,comp);
-        quick_sort(i,end,i_c,comp);
+        qsort(begin,j,j_c,comp);
+        qsort(i,end,i_c,comp);
     }
     else if(2==n)
     {
@@ -129,7 +129,7 @@ char quick_sort(const T begin,const int n,int (*comp)(const T2& a,const T2& b))
     return 1;
 }
 template<typename T,typename T2>
-char quick_sort(const T begin,T end,int (*comp)(const T2& a,const T2& b))
+char qsort(const T begin,T end,int (*comp)(const T2& a,const T2& b))
 {
     end--;                   //fake_end to true end
     int n=1;
@@ -211,8 +211,8 @@ label1:
         while(i<=j);
         free(jizhun);
         //printf("j_c=%d i_c=%d i-begin=%ld j-begin=%ld\n",j_c,i_c,i-begin,j-begin);
-        quick_sort(begin,j,j_c,comp);
-        quick_sort(i,end,i_c,comp);
+        qsort(begin,j,j_c,comp);
+        qsort(i,end,i_c,comp);
         return 1;
     }
     {
@@ -225,7 +225,7 @@ label2:
     }
 }
 template<typename T,typename T2>
-char quick_sort(const T begin,const T end,const int n,int (*comp)(const T2& a,const T2& b))
+char qsort(const T begin,const T end,const int n,int (*comp)(const T2& a,const T2& b))
 {
     if(n>2)
     {
@@ -284,8 +284,8 @@ char quick_sort(const T begin,const T end,const int n,int (*comp)(const T2& a,co
         while(i<=j);
         free(jizhun);
         //printf("j_c=%d i_c=%d i-begin=%ld j-begin=%ld\n",j_c,i_c,i-begin,j-begin);
-        quick_sort(begin,j,j_c,comp);
-        quick_sort(i,end,i_c,comp);
+        qsort(begin,j,j_c,comp);
+        qsort(i,end,i_c,comp);
     }
     else if(2==n)
     {
