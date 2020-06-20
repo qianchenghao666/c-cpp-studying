@@ -103,7 +103,7 @@ char qsort(const T begin,const int n)
         int i_c=1,j_c=n;
         do
         {
-            if(*i<*mid||*i==*mid)
+            if(!(*mid<*i))
             {
                 i++;
                 i_c++;
@@ -116,7 +116,7 @@ char qsort(const T begin,const int n)
         while(i_c!=n);
         do
         {
-            if(*mid<*j||*mid==*j)
+            if(!(*j<*mid))
             {
                 j--;
                 j_c--;
@@ -136,12 +136,12 @@ char qsort(const T begin,const int n)
             j_c--;
             while(i_c<=j_c)
             {
-                while(*i<*mid||*i==*mid)
+                while(!(*mid<*i))
                 {
                     i++;
                     i_c++;
                 }
-                while(*mid<*j||*mid==*j)
+                while(!(*j<*mid))
                 {
                     j--;
                     j_c--;
@@ -219,7 +219,7 @@ char qsort(const T begin,T end)
         int i_c=1,j_c=n;
         do
         {
-            if(*i<*mid||*i==*mid)
+            if(!(*mid<*i))
             {
                 i++;
                 i_c++;
@@ -232,7 +232,7 @@ char qsort(const T begin,T end)
         while(i_c!=n);
         do
         {
-            if(*mid<*j||*mid==*j)
+            if(!(*j<*mid))
             {
                 j--;
                 j_c--;
@@ -252,12 +252,12 @@ char qsort(const T begin,T end)
             j_c--;
             while(i_c<=j_c)
             {
-                while(*i<*mid||*i==*mid)
+                while(!(*mid<*i))
                 {
                     i++;
                     i_c++;
                 }
-                while(*mid<*j||*mid==*j)
+                while(!(*j<*mid))
                 {
                     j--;
                     j_c--;
@@ -317,7 +317,7 @@ char qsort(const T begin,const T end,const int n)
         int i_c=1,j_c=n;
         do
         {
-            if(*i<*mid||*i==*mid)
+            if(!(*mid<*i))
             {
                 i++;
                 i_c++;
@@ -330,7 +330,7 @@ char qsort(const T begin,const T end,const int n)
         while(i_c!=n);
         do
         {
-            if(*mid<*j||*mid==*j)
+            if(!(*j<*mid))
             {
                 j--;
                 j_c--;
@@ -350,12 +350,12 @@ char qsort(const T begin,const T end,const int n)
             j_c--;
             while(i_c<=j_c)
             {
-                while(*i<*mid||*i==*mid)
+                while(!(*mid<*i))
                 {
                     i++;
                     i_c++;
                 }
-                while(*mid<*j||*mid==*j)
+                while(!(*j<*mid))
                 {
                     j--;
                     j_c--;
