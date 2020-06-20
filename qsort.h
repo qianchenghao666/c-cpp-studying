@@ -33,89 +33,109 @@
 
 
 #include <stdlib.h>
+template<typename T,typename T2,typename T3>
+char qsort(const T begin,const int n,int (*comp)(T2 a,T3 b));
+template<typename T,typename T2,typename T3>
+char qsort(const T begin,T fake_end,int (*comp)(T2 a,T3 b));
+template<typename T,typename T2,typename T3>
+char qsort(const T begin,const T end,const int n,int (*comp)(T2 a,T3 b));
 template<typename T>
-char swap(T &a,T &b)
-{
-    char *temp1=(char *)&a,*temp2=(char *)&b;
-    for(long unsigned i=0;i<sizeof(T);i++)
-    {
-        *temp1^=*temp2;
-        *temp2^=*temp1;
-        *temp1^=*temp2;
-        temp1++;
-        temp2++;
-    }
-    return 1;
-}
-template<typename T,typename T2>
-char qsort(const T begin,const int n,int (*comp)(const T2& a,const T2& b));
-template<typename T,typename T2>
-char qsort(const T begin,const T fake_end,int (*comp)(const T2& a,const T2& b));
-template<typename T,typename T2>
-char qsort(const T begin,const T end,int n,int (*comp)(const T2& a,const T2& b));
-template<typename T,typename T2>
-char qsort(const T begin,const int n,int (*comp)(const T2& a,const T2& b))
+char swap(T &a,T &b);
+
+
+template<typename T,typename T2,typename T3>
+char qsort(const T begin,const int n,int (*comp)(T2 a,T3 b))
 {
     if(n>2)
     {
-        T end=begin;
+        T mid=begin;
         for(int i=0,max=n/2;i<max;i++)
         {
-            end++;
+            mid++;
         }
-        T2 *jizhun=(T2 *)malloc(sizeof(T2));
-        memcpy(jizhun,&(*end),sizeof(T2));
+        T end=mid;
         for(int i=0,max=n-n/2-1;i<max;i++)
         {
             end++;
         }
         T i=begin,j=end;
-        int i_c=n,j_c=n;
-        int temp1,temp2;
+        int i_c=1,j_c=n;
         do
         {
-            while((temp1=comp(*i,*jizhun))<0)
+            if(comp(*i,*mid)<=0)
             {
                 i++;
-                i_c--;
+                i_c++;
             }
-            while((temp2=comp(*j,*jizhun))>0)
-            {
-                j--;
-                j_c--;
-            }
-            if(i>j)
+            else
             {
                 break;
             }
-            else if(i==j)
+        }
+        while(i_c!=n);
+        do
+        {
+            if(comp(*mid,*j)<=0)
             {
-                i++;
-                i_c--;
-                j--;
-                j_c--;
-                break;
-            }
-            else if(temp1==temp2)
-            {
-                i++;
-                i_c--;
                 j--;
                 j_c--;
             }
             else
             {
-                swap(*i,*j);
-                i++;
-                i_c--;
+                break;
+            }
+        }
+        while(j_c!=1);
+        if(i_c<j_c)
+        {
+            swap(*i,*j);
+            i++;
+            i_c++;
+            j--;
+            j_c--;
+            while(i_c<=j_c)
+            {
+                while(comp(*i,*mid)<=0)
+                {
+                    i++;
+                    i_c++;
+                }
+                while(comp(*mid,*j)<=0)
+                {
+                    j--;
+                    j_c--;
+                }
+                if(i_c>j_c)
+                {
+                    break;
+                }
+                else
+                {
+                    swap(*i,*j);
+                    i++;
+                    i_c++;
+                    j--;
+                    j_c--;
+                }
+            }
+        }
+        else if(i_c==j_c)
+        {
+            if(i_c==n)
+            {
+                swap(*mid,*end);
                 j--;
                 j_c--;
             }
+            else
+            {
+                swap(*mid,*begin);
+                i++;
+                i_c++;
+            }
         }
-        while(i<=j);
-        free(jizhun);
         qsort(begin,j,j_c,comp);
-        qsort(i,end,i_c,comp);
+        qsort(i,end,n-i_c+1,comp);
     }
     else if(2==n)
     {
@@ -128,164 +148,110 @@ char qsort(const T begin,const int n,int (*comp)(const T2& a,const T2& b))
     }
     return 1;
 }
-template<typename T,typename T2>
-char qsort(const T begin,T end,int (*comp)(const T2& a,const T2& b))
+template<typename T,typename T2,typename T3>
+char qsort(const T begin,T end,int (*comp)(T2 a,T3 b))
 {
-    end--;                   //fake_end to true end
+    end--;                        //fake end to true end
     int n=1;
-    T2 *jizhun;
+    T mid;
     {
         T i=begin,j=end;
-        do
+        while(i!=j)
         {
             i++;
             n++;
-            if(i==j)
-            {
-                break;
-            }
-            j--;
-            n++;
-        }
-        while(i!=j);
-        if(n>2)
-        {
-            jizhun=(T2 *)malloc(sizeof(T2));
-            memcpy(jizhun,&(*i),sizeof(T2));
-            goto label1;
-        }
-        else if(n==2)
-        {
-            goto label2;
-        }
-        else
-        {
-            return 1;
-        }
-    }
-    {
-label1:
-        T i=begin,j=end;
-        int i_c=n,j_c=n;
-        int temp1,temp2;
-        do
-        {
-            while((temp1=comp(*i,*jizhun))<0)
-            {
-                i++;
-                i_c--;
-            }
-            while((temp2=comp(*j,*jizhun))>0)
+            if(i!=j)
             {
                 j--;
-                j_c--;
-            }
-            if(i>j)
-            {
-                break;
-            }
-            else if(i==j)
-            {
-                i++;
-                i_c--;
-                j--;
-                j_c--;
-                break;
-            }
-            else if(temp1==temp2)
-            {
-                i++;
-                i_c--;
-                j--;
-                j_c--;
+                n++;
             }
             else
             {
-                swap(*i,*j);
-                i++;
-                i_c--;
-                j--;
-                j_c--;
+                break;
             }
         }
-        while(i<=j);
-        free(jizhun);
-        //printf("j_c=%d i_c=%d i-begin=%ld j-begin=%ld\n",j_c,i_c,i-begin,j-begin);
-        qsort(begin,j,j_c,comp);
-        qsort(i,end,i_c,comp);
-        return 1;
+        mid=i;
     }
-    {
-label2:
-        if(comp(*begin,*end)>0)
-        {
-            swap(*begin,*end);
-        }
-        return 1;
-    }
-}
-template<typename T,typename T2>
-char qsort(const T begin,const T end,const int n,int (*comp)(const T2& a,const T2& b))
-{
     if(n>2)
     {
-        T2 *jizhun=(T2 *)malloc(sizeof(T2));
-        {
-            T j=end;
-            for(int i=0,max=n-n/2-1;i<max;i++)
-            {
-                j--;
-            }
-            memcpy(jizhun,&(*j),sizeof(T2));
-        }
         T i=begin,j=end;
-        int i_c=n,j_c=n;
-        int temp1,temp2;
+        int i_c=1,j_c=n;
         do
         {
-            while((temp1=comp(*i,*jizhun))<0)
+            if(comp(*i,*mid)<=0)
             {
                 i++;
-                i_c--;
+                i_c++;
             }
-            while((temp2=comp(*j,*jizhun))>0)
-            {
-                j--;
-                j_c--;
-            }
-            if(i>j)
+            else
             {
                 break;
             }
-            else if(i==j)
+        }
+        while(i_c!=n);
+        do
+        {
+            if(comp(*mid,*j)<=0)
             {
-                i++;
-                i_c--;
-                j--;
-                j_c--;
-                break;
-            }
-            else if(temp1==temp2)
-            {
-                i++;
-                i_c--;
                 j--;
                 j_c--;
             }
             else
             {
-                swap(*i,*j);
-                i++;
-                i_c--;
+                break;
+            }
+        }
+        while(j_c!=1);
+        if(i_c<j_c)
+        {
+            swap(*i,*j);
+            i++;
+            i_c++;
+            j--;
+            j_c--;
+            while(i_c<=j_c)
+            {
+                while(comp(*i,*mid)<=0)
+                {
+                    i++;
+                    i_c++;
+                }
+                while(comp(*mid,*j)<=0)
+                {
+                    j--;
+                    j_c--;
+                }
+                if(i_c>j_c)
+                {
+                    break;
+                }
+                else
+                {
+                    swap(*i,*j);
+                    i++;
+                    i_c++;
+                    j--;
+                    j_c--;
+                }
+            }
+        }
+        else if(i_c==j_c)
+        {
+            if(i_c==n)
+            {
+                swap(*mid,*end);
                 j--;
                 j_c--;
             }
+            else
+            {
+                swap(*mid,*begin);
+                i++;
+                i_c++;
+            }
         }
-        while(i<=j);
-        free(jizhun);
-        //printf("j_c=%d i_c=%d i-begin=%ld j-begin=%ld\n",j_c,i_c,i-begin,j-begin);
         qsort(begin,j,j_c,comp);
-        qsort(i,end,i_c,comp);
+        qsort(i,end,n-i_c+1,comp);
     }
     else if(2==n)
     {
@@ -293,6 +259,118 @@ char qsort(const T begin,const T end,const int n,int (*comp)(const T2& a,const T
         {
             swap(*begin,*end);
         }
+    }
+    return 1;
+}
+template<typename T,typename T2,typename T3>
+char qsort(const T begin,const T end,const int n,int (*comp)(T2 a,T3 b))
+{
+    if(n>2)
+    {
+        T mid=end;
+        for(int i=0,max=n-n/2-1;i<max;i++)
+        {
+            mid--;
+        }
+        T i=begin,j=end;
+        int i_c=1,j_c=n;
+        do
+        {
+            if(comp(*i,*mid)<=0)
+            {
+                i++;
+                i_c++;
+            }
+            else
+            {
+                break;
+            }
+        }
+        while(i_c!=n);
+        do
+        {
+            if(comp(*mid,*j)<=0)
+            {
+                j--;
+                j_c--;
+            }
+            else
+            {
+                break;
+            }
+        }
+        while(j_c!=1);
+        if(i_c<j_c)
+        {
+            swap(*i,*j);
+            i++;
+            i_c++;
+            j--;
+            j_c--;
+            while(i_c<=j_c)
+            {
+                while(comp(*i,*mid)<=0)
+                {
+                    i++;
+                    i_c++;
+                }
+                while(comp(*mid,*j)<=0)
+                {
+                    j--;
+                    j_c--;
+                }
+                if(i_c>j_c)
+                {
+                    break;
+                }
+                else
+                {
+                    swap(*i,*j);
+                    i++;
+                    i_c++;
+                    j--;
+                    j_c--;
+                }
+            }
+        }
+        else if(i_c==j_c)
+        {
+            if(i_c==n)
+            {
+                swap(*mid,*end);
+                j--;
+                j_c--;
+            }
+            else
+            {
+                swap(*mid,*begin);
+                i++;
+                i_c++;
+            }
+        }
+        qsort(begin,j,j_c,comp);
+        qsort(i,end,n-i_c+1,comp);
+    }
+    else if(2==n)
+    {
+        if(comp(*begin,*end)>0)
+        {
+            swap(*begin,*end);
+        }
+    }
+    return 1;
+}
+template<typename T>
+char swap(T &a,T &b)
+{
+    char *temp1=(char *)&a,*temp2=(char *)&b;
+    for(long unsigned i=0;i<sizeof(T);i++)
+    {
+        *temp1^=*temp2;
+        *temp2^=*temp1;
+        *temp1^=*temp2;
+        temp1++;
+        temp2++;
     }
     return 1;
 }
