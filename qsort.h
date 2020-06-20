@@ -43,7 +43,7 @@
  *    {
  *        int x[]={3,2,1};
  *        qsort( x , 3 [,comp] );
- *        qsort( x, x+2 [,comp] );
+ *        qsort( x, x+3 [,comp] );
  *
  *        std::vector<int> y {3,2,1};
  *        qsort( y.[r]begin() , y.size() [,comp] );
