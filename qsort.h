@@ -70,37 +70,37 @@
 
 #include <stdlib.h>
 template<typename T>
-char qsort(const T begin,const int n);
+char qsort(const T begin,const long unsigned int n);
 template<typename T>
 char qsort(const T begin,T fake_end);
 template<typename T>
-char qsort(const T begin,const T end,const int n);
+char qsort(const T begin,const T end,const long unsigned int n);
 template<typename T,typename T2,typename T3>
-char qsort(const T begin,const int n,int (*comp)(T2 a,T3 b));
+char qsort(const T begin,const long unsigned int n,int (*comp)(T2 a,T3 b));
 template<typename T,typename T2,typename T3>
 char qsort(const T begin,T fake_end,int (*comp)(T2 a,T3 b));
 template<typename T,typename T2,typename T3>
-char qsort(const T begin,const T end,const int n,int (*comp)(T2 a,T3 b));
+char qsort(const T begin,const T end,const long unsigned int n,int (*comp)(T2 a,T3 b));
 template<typename T>
 char swap(T &a,T &b);
 
 template<typename T>
-char qsort(const T begin,const int n)
+char qsort(const T begin,const long unsigned int n)
 {
     if(n>2)
     {
         T mid=begin;
-        for(int i=0,max=n/2;i<max;i++)
+        for(long unsigned int i=0,max=n/2;i<max;i++)
         {
             mid++;
         }
         T end=mid;
-        for(int i=0,max=n-n/2-1;i<max;i++)
+        for(long unsigned int i=0,max=n-n/2-1;i<max;i++)
         {
             end++;
         }
         T i=begin,j=end;
-        int i_c=1,j_c=n;
+        long unsigned int i_c=1,j_c=n;
         do
         {
             if(!(*mid<*i))
@@ -193,7 +193,7 @@ template<typename T>
 char qsort(const T begin,T end)
 {
     end--;                        //fake end to true end
-    int n=1;
+    long unsigned int n=1;
     T mid;
     {
         T i=begin,j=end;
@@ -216,7 +216,7 @@ char qsort(const T begin,T end)
     if(n>2)
     {
         T i=begin,j=end;
-        int i_c=1,j_c=n;
+        long unsigned int i_c=1,j_c=n;
         do
         {
             if(!(*mid<*i))
@@ -304,17 +304,17 @@ char qsort(const T begin,T end)
     return 1;
 }
 template<typename T>
-char qsort(const T begin,const T end,const int n)
+char qsort(const T begin,const T end,const long unsigned int n)
 {
     if(n>2)
     {
         T mid=end;
-        for(int i=0,max=n-n/2-1;i<max;i++)
+        for(long unsigned int i=0,max=n-n/2-1;i<max;i++)
         {
             mid--;
         }
         T i=begin,j=end;
-        int i_c=1,j_c=n;
+        long unsigned int i_c=1,j_c=n;
         do
         {
             if(!(*mid<*i))
@@ -403,22 +403,22 @@ char qsort(const T begin,const T end,const int n)
 }
 
 template<typename T,typename T2,typename T3>
-char qsort(const T begin,const int n,int (*comp)(T2 a,T3 b))
+char qsort(const T begin,const long unsigned int n,int (*comp)(T2 a,T3 b))
 {
     if(n>2)
     {
         T mid=begin;
-        for(int i=0,max=n/2;i<max;i++)
+        for(long unsigned int i=0,max=n/2;i<max;i++)
         {
             mid++;
         }
         T end=mid;
-        for(int i=0,max=n-n/2-1;i<max;i++)
+        for(long unsigned int i=0,max=n-n/2-1;i<max;i++)
         {
             end++;
         }
         T i=begin,j=end;
-        int i_c=1,j_c=n;
+        long unsigned int i_c=1,j_c=n;
         do
         {
             if(comp(*i,*mid)<=0)
@@ -511,7 +511,7 @@ template<typename T,typename T2,typename T3>
 char qsort(const T begin,T end,int (*comp)(T2 a,T3 b))
 {
     end--;                        //fake end to true end
-    int n=1;
+    long unsigned int n=1;
     T mid;
     {
         T i=begin,j=end;
@@ -534,7 +534,7 @@ char qsort(const T begin,T end,int (*comp)(T2 a,T3 b))
     if(n>2)
     {
         T i=begin,j=end;
-        int i_c=1,j_c=n;
+        long unsigned int i_c=1,j_c=n;
         do
         {
             if(comp(*i,*mid)<=0)
@@ -622,17 +622,17 @@ char qsort(const T begin,T end,int (*comp)(T2 a,T3 b))
     return 1;
 }
 template<typename T,typename T2,typename T3>
-char qsort(const T begin,const T end,const int n,int (*comp)(T2 a,T3 b))
+char qsort(const T begin,const T end,const long unsigned int n,int (*comp)(T2 a,T3 b))
 {
     if(n>2)
     {
         T mid=end;
-        for(int i=0,max=n-n/2-1;i<max;i++)
+        for(long unsigned int i=0,max=n-n/2-1;i<max;i++)
         {
             mid--;
         }
         T i=begin,j=end;
-        int i_c=1,j_c=n;
+        long unsigned int i_c=1,j_c=n;
         do
         {
             if(comp(*i,*mid)<=0)
@@ -723,7 +723,7 @@ template<typename T>
 char swap(T &a,T &b)
 {
     char *temp1=(char *)&a,*temp2=(char *)&b;
-    for(long unsigned i=0;i<sizeof(T);i++)
+    for(long unsigned int i=0;i<sizeof(T);i++)
     {
         *temp1^=*temp2;
         *temp2^=*temp1;
