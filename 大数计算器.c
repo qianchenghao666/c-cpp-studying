@@ -22,51 +22,49 @@ void fake_strcpy(char *,char *);
 void fake_strncpy(char *,char *,int);
 int fake_strncmp(char *,char *,int);
 int fake_strncmp_s(short *,short *,int);
+inline char xi()
+{
+    while(getchar()!='\n')
+    {
+    }
+    return 1;
+}
 int main()
 {
     printf("-------------------------------高精度计算器-------------------------------\n");
     printf("可进行大数/高精度的四则运算，支持输入负数\n");
     putchar('\n');
-    printf("计算两个两百位以上的随机数相除，保留一亿位小数，仅需20秒(i5-8300H，虚拟机，Ubuntu) \n");
+    printf("计算两个两百位以上的随机数相除，保留一亿位小数，仅需20秒(i5-8300H) \n");
     printf("--------------------------------------------------------------------------\n\n\n");
     int n,float_,baoliu;
     char b=0,c=0,if_sishewuru;
     printf("请输入最大位数：\n");
     printf("即要计算的数字中含有数字的个数，可不计小数点和负号。\n");
-    printf("比如你要计算的两个数字为：-123和3.5685，则你输入的这个数字必须>=5\n");
-    scanf("%d",&n);
-    while(getchar()!='\n')
+    printf("比如若你要计算的两个数字为：-123(3位)和3.5685(5位)，则最大位数为5\n");
+    while(scanf("%d",&n)!=1||getchar()!='\n')
     {
-        ;
+        xi();
+        printf("请输入最大位数：\n");
     }
 
-
-    printf("请输入运算符(+ - * /)：\n");
-    while((b=getchar())!='+'&&b!='-'&&b!='*'&&b!='/')
+    do
     {
-        ;
+        printf("请输入运算符(+ - * /)：\n");
     }
-    while(getchar()!='\n')
-    {
-        ;
-    }
+    while( (b=getchar())=='\n' || (getchar()!='\n'&&(xi()||1)) || (b!='+'&&b!='-'&&b!='*'&&b!='/') );
+    
+    
 
     
-    
-    printf("是否选择保留多少位小数(如果选n则输出完全精确数字)？(y/n)\n");
-    
-    while((c=getchar())!='y'&&c!='n')
+    do
     {
-        ;
+        printf("是否选择保留多少位小数(如果选n则输出完全精确数字)？(y/n)\n");
     }
-    while(getchar()!='\n')
-    {
-        ;
-    }
+    while((c=getchar())=='\n' || (getchar()!='\n'&&(xi()||1)) || (c!='y'&&c!='n'));
 
     if(b=='/'&&c=='n')
     {
-        printf("除法运算必须选择保留多少位小数！！");
+        printf("除法运算必须选择保留多少位小数！！\n");
         c='y';
     }
     
@@ -76,21 +74,21 @@ int main()
     {
 label1:
         printf("请输入要保留多少位小数：\n");
-        scanf("%d",&baoliu);
-        while(getchar()!='\n')
+        while(scanf("%d",&baoliu)!=1||getchar()!='\n')
         {
-            ;
+            xi();
+            printf("请输入要保留多少位小数：\n");
         }
         if(baoliu<0)
         {
             printf("保留位数必须>=0！！\n");
             goto label1;
         }
-        printf("是否要四舍五入？(y/n)\n");
-        while((if_sishewuru=getchar())!='y'&&if_sishewuru!='n')
+        do
         {
-            ;
+            printf("是否要四舍五入？(y/n)\n");
         }
+        while( (if_sishewuru=getchar())=='\n' || (getchar()!='\n'&&(xi()||1)) || (if_sishewuru!='y'&&if_sishewuru!='n') );
     }
     char *x,*y;
     x=(char *)malloc((n+3)*sizeof(char));
@@ -119,12 +117,14 @@ label1:
         printf("内存不足！！\n");
         exit(1);
     }
-    printf("请输入第一个数字：\n");
-    printf("请输入合法数字，可包含负号，小数点和数字\n");
-    scanf("%s",x);
+    printf("请输入第一个数字(请输入合法数字，可包含负号，小数点和数字)：\n");
+    scanf("%c%[0-9.]",x,x+1);
+    xi();
     printf("请输入第二个数字：\n");
-    scanf("%s",y);
-    printf("计算中。。。\n");
+    scanf("%c%[0-9.]",y,y+1);
+    xi();
+    printf("计算中。。。\n\n");
+    printf("%s\n%c\n%s\n=\n",x,b,y);
     if(c=='y')
     {
         float_=jisuan_b(b,x,y,result,n,baoliu);
