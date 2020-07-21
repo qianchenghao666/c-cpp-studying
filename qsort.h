@@ -68,27 +68,26 @@
  * */
 
 
-#include <stdlib.h>
 template<typename T>
-char qsort(const T begin,const long unsigned int n);
+void qsort(const T begin,const long unsigned int n);
 
 template<typename T>
-char qsort(const T begin,T fake_end);
+void qsort(const T begin,T fake_end);
 
 template<typename T>
 void qsort(const T begin,const T end,const long unsigned int n);
 
 template<typename T,typename T2,typename T3>
-char qsort(const T begin,const long unsigned int n,int (*comp)(T2 a,T3 b));
+void qsort(const T begin,const long unsigned int n,int (*comp)(T2 a,T3 b));
 
 template<typename T,typename T2,typename T3>
-char qsort(const T begin,T fake_end,int (*comp)(T2 a,T3 b));
+void qsort(const T begin,T fake_end,int (*comp)(T2 a,T3 b));
 
 template<typename T,typename T2,typename T3>
 void qsort(const T begin,const T end,const long unsigned int n,int (*comp)(T2 a,T3 b));
 
 template<typename T>
-inline char swap(T &a,T &b)
+inline void swap(T &a,T &b)
 {
     char *temp1=(char *)&a,*temp2=(char *)&b;
     long unsigned int i=0;
@@ -110,11 +109,10 @@ label1:
         i++;
         goto label1;
     }
-    return 1;
 }
 
 template<typename T>
-char qsort(const T begin,const long unsigned int n)
+void qsort(const T begin,const long unsigned int n)
 {
     if(n>2)
     {
@@ -216,10 +214,9 @@ char qsort(const T begin,const long unsigned int n)
             swap(*begin,*end);
         }
     }
-    return 1;
 }
 template<typename T>
-char qsort(const T begin,T end)
+void qsort(const T begin,T end)
 {
     end--;                        //fake end to true end
     long unsigned int n=1;
@@ -330,7 +327,6 @@ char qsort(const T begin,T end)
             swap(*begin,*end);
         }
     }
-    return 1;
 }
 template<typename T>
 void qsort(const T begin,const T end,const long unsigned int n)
@@ -431,7 +427,7 @@ void qsort(const T begin,const T end,const long unsigned int n)
 }
 
 template<typename T,typename T2,typename T3>
-char qsort(const T begin,const long unsigned int n,int (*comp)(T2 a,T3 b))
+void qsort(const T begin,const long unsigned int n,int (*comp)(T2 a,T3 b))
 {
     if(n>2)
     {
@@ -533,10 +529,9 @@ char qsort(const T begin,const long unsigned int n,int (*comp)(T2 a,T3 b))
             swap(*begin,*end);
         }
     }
-    return 1;
 }
 template<typename T,typename T2,typename T3>
-char qsort(const T begin,T end,int (*comp)(T2 a,T3 b))
+void qsort(const T begin,T end,int (*comp)(T2 a,T3 b))
 {
     end--;                        //fake end to true end
     long unsigned int n=1;
@@ -647,7 +642,6 @@ char qsort(const T begin,T end,int (*comp)(T2 a,T3 b))
             swap(*begin,*end);
         }
     }
-    return 1;
 }
 template<typename T,typename T2,typename T3>
 void qsort(const T begin,const T end,const long unsigned int n,int (*comp)(T2 a,T3 b))
