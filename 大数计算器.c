@@ -93,12 +93,6 @@ label1:
     char *x,*y;
     x=(char *)malloc((n+3)*sizeof(char));
     y=(char *)malloc((n+3)*sizeof(char));
-    if(x==NULL||y==NULL)
-    {
-        printf("内存不足！！\n");
-        exit(1);
-    }
-
 
     if(b!='/')
     {
@@ -112,16 +106,25 @@ label1:
 
     short *result;
     result=(short *)calloc(n,sizeof(short));
-    if(result==NULL)
+    if( x==NULL || y==NULL || result==NULL )
     {
+        free(result);
+        free(x);
+        free(y);
         printf("内存不足！！\n");
-        exit(1);
+        return 1;
     }
-    printf("请输入第一个数字(请输入合法数字，可包含负号，小数点和数字)：\n");
-    scanf("%c%[0-9.]",x,x+1);
+    do
+    {
+        printf("请输入第一个数字(请输入合法数字，可包含负号，小数点和数字)：\n");
+    }
+    while( scanf("%[-0-9.]",x)!=1 && (xi()||1) );
     xi();
-    printf("请输入第二个数字：\n");
-    scanf("%c%[0-9.]",y,y+1);
+    do
+    {
+        printf("请输入第二个数字：\n");
+    }
+    while( scanf("%[-0-9.]",y)!=1 && (xi()||1) );
     xi();
     printf("计算中。。。\n\n");
     printf("%s\n%c\n%s\n=\n",x,b,y);
