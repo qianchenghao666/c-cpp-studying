@@ -22,6 +22,7 @@ void fake_strcpy(char *,char *);
 void fake_strncpy(char *,char *,int);
 int fake_strncmp(char *,char *,int);
 int fake_strncmp_s(short *,short *,int);
+char xi();
 inline char xi()
 {
     while(getchar()!='\n')
