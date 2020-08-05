@@ -89,10 +89,6 @@ inline void calc_baoliu(int8_t fuhao,Num *a,Num *b,Num *result,LEN baoliu)
     }
     */
 }
-inline void jia(Num const *const Num_a,Num const *const Num_b,Num *const Num_result)
-{
-    ;
-}
 inline void cheng(Num const *const Num_a,Num const *const Num_b,Num *const Num_result)
 {
     if(Num_a->len==0||Num_b->len==0)
