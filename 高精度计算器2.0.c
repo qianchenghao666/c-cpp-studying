@@ -51,7 +51,8 @@ int main()
     Num a={NULL},b={NULL},result={NULL};
     printf("-------------------------------高精度计算器2.0-------------------------------\n");
     printf("可进行大数/高精度的四则运算，支持输入负数\n");
-    printf("计算两个600位的随机数相除，保留一亿位小数，仅需6.5秒(i5-8300H) \n");
+    printf("计算两个600位的随机数相除，保留一亿位小数，耗时6.3秒(i5-8300H)\n");
+    printf("计算两个一百万位的随机数相乘，精确输出，耗时16秒(i5-8300H)");
     printf("-----------------------------------------------------------------------------\n\n\n");
     int8_t fuhao;
     LEN baoliu;
@@ -71,8 +72,7 @@ int main()
     putchar('\n');
     putchar('(');
     fuhao==3&&(printf("未四舍五入，"),1);
-    printf("计算耗时：%ldms",(stop-start)/(CLOCKS_PER_SEC/1000));
-    printf(")\n");
+    printf("计算耗时：%ldms)\n",(stop-start)/(CLOCKS_PER_SEC/1000));
     free(a.num);
     free(b.num);
     free(result.num);
