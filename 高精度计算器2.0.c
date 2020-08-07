@@ -15,7 +15,7 @@
 #define FLOAT_WIDTH_MAX LONG_MAX
 #define FLOAT_WIDTH_MIN LONG_MIN
 #define LEN_MAX ULONG_MAX
-#define MALLOC_MAX ULONG_MAX  //malloc可以接受的最大传参
+#define MALLOC_MAX ULONG_MAX  //malloc可以接受的最大传参，即size_t的最大值
 
 
 #define TO_STR(x) #x
@@ -31,15 +31,18 @@ typedef struct
     uint8_t float_offset;
     LEN len;
 } Num;
-static inline void calc_baoliu(int8_t fuhao,Num *a,Num *b,Num *result,LEN baoliu);
+static inline void calc_baoliu(const int8_t fuhao,const Num *const a,const Num *const b,Num *const result,const LEN baoliu);
 static inline void chu(Num const * const Num_a,Num const *const Num_b,const LEN baoliu,Num *const Num_result);
 static inline void cheng(Num const *const Num_a,Num const *const Num_b,Num *const Num_result);
+static inline void jian(Num const*const a,Num const*const b,Num *const result);
+static inline void jia(Num const*const a,Num const*const b,Num *const result);
 static inline NUM_WIDTH numcmp(const NUM_WIDTH *const a,const NUM_WIDTH *b,const LEN compare_number);
 static inline void jinwei_zhengxiang(NUM_WIDTH *a,LEN len);
 static inline void jinwei_fanxiang(NUM_WIDTH *a,LEN len);
+static inline int8_t Num_compare_jueduizhi(Num const * const a,Num const * const b);
 void scan(Num *a,Num *b,int8_t *fuhao,LEN *baoliu);
 void print(Num const *const a);
-void string_to_Num(char *,Num *,int8_t fuhao);
+void string_to_Num(char *string,Num *const a,int8_t const fuhao);
 static inline void xi();
 bool check(const char *);
 int main()
@@ -47,7 +50,7 @@ int main()
     Num a={NULL},b={NULL},result={NULL};
     printf("-------------------------------高精度计算器2.0-------------------------------\n");
     printf("可进行大数/高精度的四则运算，支持输入负数\n");
-    printf("计算两个600位的随机数相除，保留一亿位小数，仅需7秒(i5-8300H) \n");
+    printf("计算两个600位的随机数相除，保留一亿位小数，仅需6.5秒(i5-8300H) \n");
     printf("-----------------------------------------------------------------------------\n\n\n");
     int8_t fuhao;
     LEN baoliu;
@@ -69,7 +72,7 @@ int main()
     free(result.num);
     return 0;
 }
-inline void calc_baoliu(int8_t fuhao,Num *a,Num *b,Num *result,LEN baoliu)
+inline void calc_baoliu(const int8_t fuhao,const Num *const a,const Num *const b,Num *const result,const LEN baoliu)
 {
     if(fuhao == 3)
     {
@@ -79,76 +82,173 @@ inline void calc_baoliu(int8_t fuhao,Num *a,Num *b,Num *result,LEN baoliu)
     {
         cheng(a,b,result);
     }
-    /*else if(fuhao==1)
+    else if(fuhao==1||fuhao==0)
     {
-        jian(a,b,result)
+        result->float_offset=0;
+        bool temp_fuhao=fuhao^b->is_negative;
+        if(a->is_negative==temp_fuhao)
+        {
+            result->is_negative=a->is_negative;
+            jia(a,b,result);
+        }
+        else
+        {
+            int8_t temp;
+            if((temp=Num_compare_jueduizhi(a,b))>0)
+            {
+                result->is_negative=a->is_negative;
+                jian(a,b,result);
+            }
+            else if(temp<0)
+            {
+                result->is_negative=temp_fuhao;
+                jian(b,a,result);
+            }
+            else
+            {
+                result->len=0;
+                result->is_negative=0;
+            }
+        }
     }
-    else if(fuhao==0)
-    {
-        jia(a,b,result);
-    }
-    */
 }
-inline void cheng(Num const *const Num_a,Num const *const Num_b,Num *const Num_result)
+inline int8_t Num_compare_jueduizhi(Num const * const a,Num const * const b)
 {
-    if(Num_a->len==0||Num_b->len==0)
+    NUM_WIDTH temp;
+    if(a->float_segment+a->len>b->float_segment+b->len)
     {
-        Num_result->len=0;
-        Num_result->is_negative=0;
-        return;
+        return 1;
     }
-    if((__int128_t)Num_a->len+Num_b->len>LEN_MAX)
+    else if(a->float_segment+a->len<b->float_segment+b->len)
     {
-        printf("结果位数过多\n");
+        return -1;
+    }
+    else if(a->len>b->len)
+    {
+        return 1;
+    }
+    else if(a->len<b->len)
+    {
+        return -1;
+    }
+    else if((temp=numcmp(a->num,b->num,a->len))<0)
+    {
+        return -1;
+    }
+    else
+    {
+        return temp!=0;
+    }
+}
+inline void jian(Num const*const Num_a,Num const*const Num_b,Num *const Num_result)
+{
+    if((__int128_t)Num_a->float_segment+Num_a->len>FLOAT_WIDTH_MAX||(__int128_t)Num_b->float_segment+Num_b->len>FLOAT_WIDTH_MAX)
+    {
+        printf("位数过多\n");
         exit(1);
     }
-    LEN len_result=Num_a->len+Num_b->len;
-    if(len_result>MALLOC_MAX/sizeof(NUM_WIDTH))
+    FLOAT_WIDTH max=(Num_a->float_segment+(FLOAT_WIDTH)Num_a->len>Num_b->float_segment+(FLOAT_WIDTH)Num_b->len)?Num_a->float_segment+Num_a->len:Num_b->float_segment+Num_b->len;
+    FLOAT_WIDTH min=Num_a->float_segment<Num_b->float_segment?Num_a->float_segment:Num_b->float_segment;
+    if((__int128_t)max-min+1>MALLOC_MAX)
     {
-        printf("结果位数过多，无法malloc\n");
+        printf("位数过多，无法malloc\n");
         exit(1);
     }
-    NUM_WIDTH* temp_result=Num_result->num=(NUM_WIDTH *)calloc(len_result,sizeof(NUM_WIDTH));
-    if(temp_result==NULL)
+    NUM_WIDTH *const result=Num_result->num=(NUM_WIDTH *)calloc(max-min+1,sizeof(NUM_WIDTH));
+    if(result==NULL)
     {
         printf("内存不足\n");
         exit(1);
     }
-
-    Num_result->float_segment=Num_a->float_segment+Num_b->float_segment;
-    Num_result->float_offset=Num_a->float_offset+Num_b->float_offset;
-    if(Num_result->float_offset>=WEI)
+    Num_result->float_segment=min;
+    if((__int128_t)Num_a->len>MALLOC_MAX/sizeof(NUM_WIDTH))
     {
-        Num_result->float_offset-=WEI;
-        Num_result->float_segment++;
+        printf("位数过多，无法malloc\n");
+        exit(1);
     }
-    Num_result->is_negative=Num_a->is_negative^Num_b->is_negative;
-
-    const NUM_WIDTH *const beichengshu=Num_a->num;
-    const LEN len_beichengshu_jia1=Num_a->len+1;
-    const NUM_WIDTH *const beichengshu_max=beichengshu+Num_a->len;
-    const NUM_WIDTH *chengshu=Num_b->num;
-    const NUM_WIDTH *const chengshu_max=chengshu+Num_b->len;
-    //计算
-    while(chengshu!=chengshu_max)
+    memcpy(result+Num_a->float_segment-min,Num_a->num,Num_a->len*sizeof(NUM_WIDTH));
+    NUM_WIDTH *const result_b_start=result+Num_b->float_segment-min;
     {
-        NUM_WIDTH *temp_temp_result=temp_result;
-        const NUM_WIDTH *temp_beichengshu=beichengshu;
-        while(temp_beichengshu!=beichengshu_max)
+        NUM_WIDTH *temp_result_b=result_b_start;
+        const NUM_WIDTH *temp_b_num=Num_b->num;
+        const NUM_WIDTH *const temp_b_num_max=temp_b_num+Num_b->len;
+        for(;temp_b_num!=temp_b_num_max;temp_result_b++,temp_b_num++)
         {
-            *temp_temp_result+=*temp_beichengshu**chengshu;
-            temp_temp_result++;
-            temp_beichengshu++;
+            *temp_result_b-=*temp_b_num;
         }
-        jinwei_zhengxiang(temp_result,len_beichengshu_jia1);
-        temp_result++;
-        chengshu++;
     }
-    if(*(temp_result+len_beichengshu_jia1-2)==0)
+    jinwei_fanxiang(result_b_start,(LEN)(max-Num_b->float_segment+1));
+    LEN result_len=max-min+1;
+    NUM_WIDTH * result_max=result+result_len-1;
+    while(*result_max==0&&result_max!=result)
     {
-        len_result--;
+        result_max--;
+        result_len--;
     }
-    Num_result->len=len_result;
+    if(result_max==result&&*result==0)
+    {
+        Num_result->is_negative=0;
+        result_len--;
+    }
+    Num_result->len=result_len;
+}
+inline void jia(Num const*const Num_a,Num const*const Num_b,Num *const Num_result)
+{
+    if((__int128_t)Num_a->float_segment+Num_a->len>FLOAT_WIDTH_MAX||(__int128_t)Num_b->float_segment+Num_b->len>FLOAT_WIDTH_MAX)
+    {
+        printf("位数过多\n");
+        exit(1);
+    }
+    FLOAT_WIDTH max=(Num_a->float_segment+(FLOAT_WIDTH)Num_a->len>Num_b->float_segment+(FLOAT_WIDTH)Num_b->len)?Num_a->float_segment+Num_a->len:Num_b->float_segment+Num_b->len;
+    FLOAT_WIDTH min=Num_a->float_segment<Num_b->float_segment?Num_a->float_segment:Num_b->float_segment;
+    if((__int128_t)max-min+1>MALLOC_MAX)
+    {
+        printf("位数过多，无法malloc\n");
+        exit(1);
+    }
+    NUM_WIDTH *const result=Num_result->num=(NUM_WIDTH *)calloc(max-min+1,sizeof(NUM_WIDTH));
+    if(result==NULL)
+    {
+        printf("内存不足\n");
+        exit(1);
+    }
+    Num_result->float_segment=min;
+    if(Num_a->len>=Num_b->len)
+    {
+        memcpy(result+Num_a->float_segment-min,Num_a->num,Num_a->len*sizeof(NUM_WIDTH));
+        {
+            NUM_WIDTH *temp_result_b=result+Num_b->float_segment-min;
+            const NUM_WIDTH *temp_b_num=Num_b->num;
+            const NUM_WIDTH *const temp_b_num_max=temp_b_num+Num_b->len;
+            for(;temp_b_num!=temp_b_num_max;temp_result_b++,temp_b_num++)
+            {
+                *temp_result_b+=*temp_b_num;
+            }
+        }
+    }
+    else
+    {
+        memcpy(result+Num_b->float_segment-min,Num_b->num,Num_b->len*sizeof(NUM_WIDTH));
+        {
+            NUM_WIDTH *temp_result_a=result+Num_a->float_segment-min;
+            const NUM_WIDTH *temp_a_num=Num_a->num;
+            const NUM_WIDTH *const temp_a_num_max=temp_a_num+Num_a->len;
+            for(;temp_a_num!=temp_a_num_max;temp_result_a++,temp_a_num++)
+            {
+                *temp_result_a+=*temp_a_num;
+            }
+        }
+    }
+    FLOAT_WIDTH min_max=Num_a->float_segment>min?Num_a->float_segment:Num_b->float_segment;
+    jinwei_zhengxiang(result+min_max-min,(LEN)(max-min_max+1));
+    if(*(result+max-min)==0)
+    {
+        Num_result->len=max-min;
+    }
+    else
+    {
+        Num_result->len=max-min+1;
+    }
 }
 inline void chu(Num const * const Num_a,Num const *const Num_b,const LEN baoliu,Num *const Num_result)
 {
@@ -450,6 +550,88 @@ label2:;
     free(beichushu);
     free(temp_chushu);
 }
+inline void cheng(Num const *const Num_a,Num const *const Num_b,Num *const Num_result)
+{
+    if(Num_a->len==0||Num_b->len==0)
+    {
+        Num_result->len=0;
+        Num_result->is_negative=0;
+        return;
+    }
+    if((__int128_t)Num_a->len+Num_b->len>LEN_MAX)
+    {
+        printf("结果位数过多\n");
+        exit(1);
+    }
+    LEN len_result=Num_a->len+Num_b->len;
+    if(len_result>MALLOC_MAX/sizeof(NUM_WIDTH))
+    {
+        printf("结果位数过多，无法malloc\n");
+        exit(1);
+    }
+    NUM_WIDTH* temp_result=Num_result->num=(NUM_WIDTH *)calloc(len_result,sizeof(NUM_WIDTH));
+    if(temp_result==NULL)
+    {
+        printf("内存不足\n");
+        exit(1);
+    }
+
+    Num_result->float_segment=Num_a->float_segment+Num_b->float_segment;
+    Num_result->float_offset=Num_a->float_offset+Num_b->float_offset;
+    if(Num_result->float_offset>=WEI)
+    {
+        Num_result->float_offset-=WEI;
+        Num_result->float_segment++;
+    }
+    Num_result->is_negative=Num_a->is_negative^Num_b->is_negative;
+
+    const NUM_WIDTH *const beichengshu=Num_a->num;
+    const NUM_WIDTH *const beichengshu_max=beichengshu+Num_a->len;
+    const NUM_WIDTH *chengshu=Num_b->num;
+    const NUM_WIDTH *const chengshu_max=chengshu+Num_b->len;
+    //计算
+    NUM_WIDTH jishu=(NUM_WIDTH)A_E_B(1,WEI)-1; //循环次数：(NUM_WIDTH)A_E_B(1,WEI)
+    if((__int128_t)Num_a->len+(NUM_WIDTH)A_E_B(1,WEI)>LEN_MAX)
+    {
+        printf("位数过多\n");
+        exit(1);
+    }
+    const LEN len_beichengshu_jia_xunhuancishu=Num_a->len+(NUM_WIDTH)A_E_B(1,WEI);
+    NUM_WIDTH *mark_result=temp_result;
+    while(chengshu!=chengshu_max)
+    {
+        NUM_WIDTH *temp_temp_result=temp_result;
+        const NUM_WIDTH *temp_beichengshu=beichengshu;
+        while(temp_beichengshu!=beichengshu_max)
+        {
+            *temp_temp_result+=*temp_beichengshu**chengshu;
+            temp_temp_result++;
+            temp_beichengshu++;
+        }
+        //jinwei_zhengxiang(temp_result,len_beichengshu_jia1);
+        temp_result++;
+        chengshu++;
+        if(jishu!=0)
+        {
+            jishu--;
+        }
+        else
+        {
+            jinwei_zhengxiang(mark_result,len_beichengshu_jia_xunhuancishu);
+            mark_result=temp_result;
+            jishu=(NUM_WIDTH)A_E_B(1,WEI)-1;
+        }
+    }
+    jinwei_zhengxiang(mark_result,len_beichengshu_jia_xunhuancishu-1-jishu);
+    if(*(mark_result+len_beichengshu_jia_xunhuancishu-2-jishu)==0)
+    {
+        Num_result->len=(len_result-1);
+    }
+    else
+    {
+        Num_result->len=len_result;
+    }
+}
 inline NUM_WIDTH numcmp(const NUM_WIDTH *const a,const NUM_WIDTH *b,const LEN n)
 {
     if(n==0)
@@ -580,7 +762,7 @@ bool check(const char *a)
     }
     return 1;
 }
-void string_to_Num(char *string,Num *a,int8_t fuhao)
+void string_to_Num(char *string,Num *const a,int8_t const fuhao)
 {
     while(*string=='0')
     {
@@ -620,15 +802,12 @@ void string_to_Num(char *string,Num *a,int8_t fuhao)
         {
             if(string[i]=='.')
             {
+                len--;
+                float_=i-len;
+                memcpy(string+i,string+i+1,-float_);
                 break;
             }
             i++;
-        }
-        if(i!=len-1)
-        {
-            len--;
-            float_=i-len;
-            memcpy(string+i,string+i+1,-float_);
         }
     }
     if(len==0)
