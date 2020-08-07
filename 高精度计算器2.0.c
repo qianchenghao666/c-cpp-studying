@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <limits.h>
+#include <time.h>
 
 
 #define WEI 6   //每位数字表示十进制多少位数字
@@ -56,7 +57,9 @@ int main()
     LEN baoliu;
     scan(&a,&b,&fuhao,&baoliu);
     printf("计算中。。。\n");
+    clock_t start=clock();
     calc_baoliu(fuhao,&a,&b,&result,baoliu);
+    clock_t stop=clock();
     putchar('\n');
     print(&a);
     putchar('\n');
@@ -66,7 +69,10 @@ int main()
     printf("\n=\n");
     print(&result);
     putchar('\n');
-    
+    putchar('(');
+    fuhao==3&&(printf("未四舍五入，"),1);
+    printf("计算耗时：%ldms",(stop-start)/(CLOCKS_PER_SEC/1000));
+    printf(")\n");
     free(a.num);
     free(b.num);
     free(result.num);
