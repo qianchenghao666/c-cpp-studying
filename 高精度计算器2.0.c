@@ -777,7 +777,13 @@ void string_to_Num(char *string,Num *const a,int8_t const fuhao)
     size_t len=strlen(string);
     if(len==0)
     {
-        goto label1;
+label1:
+        a->num=NULL;
+        a->len=0;
+        a->float_segment=0;
+        a->float_offset=0;
+        a->is_negative=0;
+        return;
     }
     int64_t float_=0;
     while(string[len-1]=='0')
@@ -818,13 +824,7 @@ void string_to_Num(char *string,Num *const a,int8_t const fuhao)
     }
     if(len==0)
     {
-label1:
-        a->num=NULL;
-        a->len=0;
-        a->float_segment=0;
-        a->float_offset=0;
-        a->is_negative=0;
-        return;
+        goto label1;
     }
 
     NUM_WIDTH *num;
