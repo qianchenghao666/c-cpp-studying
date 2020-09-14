@@ -66,7 +66,7 @@
  *    swap函数与std::swap重名，请不要使用using namespace std; 
  *    或者将修改源码将swap换个名字
  * */
-
+#include <stdint.h>
 
 template<typename T>
 void qsort(const T begin,const long unsigned int n);
@@ -87,27 +87,47 @@ template<typename T,typename T2,typename T3>
 void qsort(const T begin,const T end,const long unsigned int n,int (*comp)(T2 a,T3 b));
 
 template<typename T>
-inline void swap(T &a,T &b)
+void swap(T &a,T &b)
 {
-    char *temp1=(char *)&a,*temp2=(char *)&b;
-    long unsigned int i=0;
-    if(i<sizeof(T))
+    uint8_t *temp1=(uint8_t *)&a,*temp2=(uint8_t *)&b;
+    long unsigned int i=sizeof(T);
+    if(i>=sizeof(long long))
     {
-        *temp1^=*temp2;
-        *temp2^=*temp1;
-        *temp1^=*temp2;
-        i++;
+        goto label1;
     }
+    else if(i!=0)
+    {
+        goto label2;
+    }
+    else
+    {
+        return;
+    }
+    while(i>=sizeof(long long))
+    {
+        temp1+=sizeof(long long);
+        temp2+=sizeof(long long);
 label1:
-    if(i<sizeof(T))
+        *(long long *)temp1^=*(long long *)temp2;
+        *(long long *)temp2^=*(long long *)temp1;
+        *(long long *)temp1^=*(long long *)temp2;
+        i-=sizeof(long long);
+    }
+    if(i!=0)
+    {
+        temp1+=sizeof(long long);
+        temp2+=sizeof(long long);
+        goto label2;
+    }
+    while(i!=0)
     {
         temp1++;
         temp2++;
+label2:
         *temp1^=*temp2;
         *temp2^=*temp1;
         *temp1^=*temp2;
-        i++;
-        goto label1;
+        i--;
     }
 }
 
