@@ -91,42 +91,40 @@ void swap(T &a,T &b)
 {
     uint8_t *temp1=(uint8_t *)&a,*temp2=(uint8_t *)&b;
     long unsigned int i=sizeof(T);
-    if(i>=sizeof(long long))
+    while(i>=sizeof(uint64_t))
     {
-        goto label1;
+        *(uint64_t *)temp1^=*(uint64_t *)temp2;
+        *(uint64_t *)temp2^=*(uint64_t *)temp1;
+        *(uint64_t *)temp1^=*(uint64_t *)temp2;
+        temp1+=sizeof(uint64_t);
+        temp2+=sizeof(uint64_t);
+        i-=sizeof(uint64_t);
     }
-    else if(i!=0)
+    while(i>=sizeof(uint32_t))
     {
-        goto label2;
+        *(uint32_t *)temp1^=*(uint32_t *)temp2;
+        *(uint32_t *)temp2^=*(uint32_t *)temp1;
+        *(uint32_t *)temp1^=*(uint32_t *)temp2;
+        temp1+=sizeof(uint32_t);
+        temp2+=sizeof(uint32_t);
+        i-=sizeof(uint32_t);
     }
-    else
+    while(i>=sizeof(uint16_t))
     {
-        return;
-    }
-    while(i>=sizeof(long long))
-    {
-        temp1+=sizeof(long long);
-        temp2+=sizeof(long long);
-label1:
-        *(long long *)temp1^=*(long long *)temp2;
-        *(long long *)temp2^=*(long long *)temp1;
-        *(long long *)temp1^=*(long long *)temp2;
-        i-=sizeof(long long);
-    }
-    if(i!=0)
-    {
-        temp1+=sizeof(long long);
-        temp2+=sizeof(long long);
-        goto label2;
+        *(uint16_t *)temp1^=*(uint16_t *)temp2;
+        *(uint16_t *)temp2^=*(uint16_t *)temp1;
+        *(uint16_t *)temp1^=*(uint16_t *)temp2;
+        temp1+=sizeof(uint16_t);
+        temp2+=sizeof(uint16_t);
+        i-=sizeof(uint16_t);
     }
     while(i!=0)
     {
-        temp1++;
-        temp2++;
-label2:
         *temp1^=*temp2;
         *temp2^=*temp1;
         *temp1^=*temp2;
+        temp1++;
+        temp2++;
         i--;
     }
 }
